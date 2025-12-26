@@ -1,51 +1,58 @@
 name: CI-CD
+
 on:
   push:
-    branches: [ "main", "feature/**" ]
+    branches: [ "**" ]
   pull_request:
-    branches: [ "main" ]
+
 permissions:
   contents: read
   deployments: write
+
 env:
   NODE_VERSION: '20.x'
+
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          # Видалили cache: 'npm', щоб не було помилки через відсутність lock-файлу
       - run: npm install
       - run: npm test
-      - name: Upload Test Report
+      - name: Upload Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-report
-          path: coverage/
+          name: test-results
+          path: . # Завантажуємо корінь проєкту як тимчасовий артефакт для звіту
+
   build:
-    needs: test
+    name: Build
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: npm install
-      - run: npm run build --if-present
-      - name: Save Build Artifact
+      - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
-          name: build-assets
-          path: dist/
+          name: app-build
+          path: .
+
   deploy:
-    needs: build
+    name: Deploy
+    needs: [build]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: production
+    environment: staging
     steps:
-      - name: Simulation of Deploy
-        run: |
-          echo "Deploying to server..."
-          echo "Token: ${{ secrets.DEPLOY_TOKEN }}"
+      - name: Simulate Deploy
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: echo "Deploying to staging with token..."
