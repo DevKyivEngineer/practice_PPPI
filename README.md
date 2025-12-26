@@ -1,2 +1,1 @@
-# ![Tests](https://github.com/DevKyivEngineer/repo/actions/workflows/tests.ym
-l/badge.svg)
+![Tests](https://github.com/DevKyivEngineer/practice_PPPI/actions/workflows/tests.yml/badge.svg)
