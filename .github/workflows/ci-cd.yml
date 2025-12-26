@@ -23,20 +23,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          [cite_start]cache: 'npm' 
+          cache: 'npm'
 
-      - run: npm install
-      - run: npm test
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
 
       - name: Upload Test Report
-        [cite_start]if: always() 
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-report
-          path: coverage/ 
+          path: coverage/
 
   build:
-    [cite_start]needs: test 
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,15 +50,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-assets
-          [cite_start]path: dist/ 
+          path: dist/
 
   deploy:
     needs: build
-    [cite_start]if: github.ref == 'refs/heads/main' 
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    [cite_start]environment: production 
+    environment: production
     steps:
       - name: Simulation of Deploy
         run: |
           echo "Deploying to server using secret token..."
-          echo "Token: ${{ secrets.DEPLOY_TOKEN }}" # Робота з секретами [cite: 53]
+          echo "Token: ${{ secrets.DEPLOY_TOKEN }}"
