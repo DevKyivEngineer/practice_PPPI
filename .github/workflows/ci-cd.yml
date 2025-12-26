@@ -1,18 +1,14 @@
 name: CI-CD
-
 on:
   push:
     branches: [ "main", "feature/**" ]
   pull_request:
     branches: [ "main" ]
-
 permissions:
   contents: read
   deployments: write
-
 env:
   NODE_VERSION: '20.x'
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -31,7 +27,6 @@ jobs:
         with:
           name: test-report
           path: coverage/
-
   build:
     needs: test
     runs-on: ubuntu-latest
@@ -44,7 +39,6 @@ jobs:
         with:
           name: build-assets
           path: dist/
-
   deploy:
     needs: build
     if: github.ref == 'refs/heads/main'
